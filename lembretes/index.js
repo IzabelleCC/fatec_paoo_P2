@@ -20,15 +20,15 @@ let id = 1
 //GET /lembretes
 app.get('/lembretes', (req, res) => res.send(lembretes))  
 
-//POST /eventos
-app.post('/eventos', (req, res) => {
-  try{
-    const evento = req.body
-    console.log(evento)
-  }
-  catch(e){}
-  res.status(200).end() 
-})
+// //POST /eventos
+// app.post('/eventos', (req, res) => {
+//   try{
+//     const evento = req.body
+//     console.log(evento)
+//   }
+//   catch(e){}
+//   res.status(200).end() 
+// })
 
 //POST /lembretes {texto: "Fazer cafe"}
 app.post('/lembretes', async (req, res) => {

@@ -25,6 +25,8 @@ const funcoes = {
 app.post('/eventos', async (req, res) => {
   // if (funcoes[req.body.type])
   //   funcoes[req.body.type](req.body.payload)
+  const evento = req.body
+  console.log(evento)
   try{
     funcoes[req.body.type](req.body.payload)
   } 

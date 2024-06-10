@@ -38,6 +38,7 @@ app.post('/eventos', (req, res) => {
   try{
     //princípio aberto/fechado
     const evento = req.body
+    console.log(evento)
     funcoes[evento.type](evento.payload)
   }
   catch(e){}
