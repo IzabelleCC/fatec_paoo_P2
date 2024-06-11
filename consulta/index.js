@@ -13,14 +13,16 @@ const funcoes = {
   LembreteCriado: (lembrete) => {
     baseConsolidada[lembrete.id] = lembrete
   },
+  LembreteAtualizado: (lembrete) => {
+    baseConsolidada[lembrete.id] = lembrete
+  },
   ObservacaoCriada: (observacao) => {
     const observacoes = baseConsolidada[observacao.lembreteId]['observacoes'] || []
     observacoes.push(observacao)
     baseConsolidada[observacao.lembreteId]['observacoes'] = observacoes
   },
   ObservacaoAtualizada: (observacao) => {
-    const observacoes = 
-      baseConsolidada[observacao.lembreteId]['observacoes']
+    const observacoes = baseConsolidada[observacao.lembreteId]['observacoes']
     const indice = observacoes.findIndex(o => o.id === observacao.id)
     observacoes[indice] = observacao
   }

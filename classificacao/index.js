@@ -9,14 +9,33 @@ const { PORT } = process.env
 const funcoes = {
   ObservacaoCriada: async (observacao) => {
     observacao.status = 
-      observacao.texto.toLowerCase().includes('importante') ? 
-      'importante':
-      'comum'
+      observacao.texto.toLowerCase().includes('importante') ? 'importante':'comum'
     await axios.post(
       'http://localhost:10000/eventos',
       {
         type: 'ObservacaoClassificada',
         payload: observacao
+      }
+    )
+  },
+  LembreteCriado: async (lembrete) => {
+    if(lembrete.texto.toLowerCase().includes('importante')){
+      lembrete.status = 'importante'
+    }
+    else{
+      if(lembrete.texto.toLowerCase().includes('urgente')){
+        lembrete.status = 'urgente'
+      }
+      else{
+        lembrete.status = 'comum'
+      }
+    }
+    console.log(lembrete)
+    await axios.post(
+      'http://localhost:10000/eventos',
+      {
+        type: 'LembreteClassificado',
+        payload: lembrete
       }
     )
   }
