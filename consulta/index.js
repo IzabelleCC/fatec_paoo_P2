@@ -5,7 +5,7 @@ const express = require ('express')
 const app = express()
 app.use(express.json())
 
-const { PORT } = process.env
+const {PORT_BARRAMENTO, PORT_CONSULTA} = process.env
 
 const baseConsolidada = {}
 
@@ -49,15 +49,11 @@ app.post('/eventos', (req, res) => {
 
 
 app.listen(
-  PORT,
+  PORT_CONSULTA,
   async () => {
-    console.log(`Consulta: ${PORT}`)
-    const eventos = await axios.get('http://localhost:10000/eventos')
+    console.log(`Consulta: ${PORT_CONSULTA}`)
+    const eventos = await axios.get(`http://localhost:${PORT_BARRAMENTO}/eventos`)
     eventos.data.forEach((valor, indice, colecao) => {
-      // try{
-      //   undefined()
-      // }
-      // catch(e){}
       if(funcoes[valor.type]){
         funcoes[valor.type](valor.payload)
       }

@@ -1,11 +1,38 @@
-require('dotenv').config()
-const express = require('express')
-const axios = require('axios')
+import dotenv from 'dotenv';
+import Queue from 'p-queue';
+import express from 'express';
+import axios from 'axios';
+
+dotenv.config();
 const app = express()
-//aplicando um middleware
 app.use(express.json())
 
+const { PORT_BARRAMENTO,
+  PORT_CONSULTA,
+  PORT_LEMBRETES,
+  PORT_OBSERVACOES,
+  PORT_CLASSIFICACAO
+  } = process.env
+  
 const eventos = []
+  
+const queue = new Queue({ concurrency: 5 }); // 5, até 5 requisições simultâneas
+
+const handlers = { //manipulador
+  'LembreteCriado': async (evento) => {
+    axios.post(`http://localhost:${PORT_CLASSIFICACAO}/eventos`, evento)
+    axios.post(`http://localhost:${PORT_CONSULTA}/eventos`, evento)},//classificação e consulta
+    'LembreteClassificado': async (evento) => axios.post(`http://localhost:${PORT_LEMBRETES}/eventos`, evento),//lembretes
+    'LembreteAtualizado': async (evento) => axios.post(`http://localhost:${PORT_CONSULTA}/eventos`, evento),//consulta
+    
+    'ObservacaoCriada': async (evento) => {
+      axios.post(`http://localhost:${PORT_CLASSIFICACAO}/eventos`, evento)
+      axios.post(`http://localhost:${PORT_CONSULTA}/eventos`, evento)},//classificação e consulta
+      'ObservacaoClassificada': async (evento) => axios.post(`http://localhost:${PORT_OBSERVACOES}/eventos`, evento),//observacoes
+      'ObservacaoAtualizada': async (evento) => axios.post(`http://localhost:${PORT_CONSULTA}/eventos`, evento),//consulta
+      
+      'default': async (evento) => console.log('Evento não esperado', evento)
+};
 
 //aqui recebemos todos os eventos
 //e repassamos para todos os mss
@@ -14,30 +41,12 @@ app.post('/eventos', async (req, res) => {
   const evento = req.body
   eventos.push(evento)
   console.log(evento)
-  if(evento.type === 'LembreteClassificado'){
-    try{
-      await axios.post('http://localhost:4000/eventos', evento)//lembretes
-    }
-    catch(e){}
-  }
-  if(evento.type === 'ObservacaoClassificada'){
-    try{
-      await axios.post('http://localhost:5000/eventos', evento)//observação
-    }
-    catch(e){}
-  }
-  if(evento.type !== 'ObservacaoClassificada' && evento.type !== 'LembreteClassificado'){
-    try{
-      await axios.post('http://localhost:6000/eventos', evento)//consulta
-    }
-    catch(e){} 
- }
- if(evento.type === 'ObservacaoCriada' || evento.type === 'LembreteCriado'){
-   try{
-     await axios.post('http://localhost:7000/eventos', evento)//classificação
-   }
-   catch(e){}
- }
+  
+  queue.add(async () => {
+    const handler = handlers[evento.type] || handlers['default']
+    try { await handler(evento) }
+    catch(e) { console.error(e) }
+  });
   res.status(200).end()
 })
 
@@ -46,6 +55,6 @@ app.get('/eventos', (req, res) => {
 })
 
 app.listen(
-  process.env.PORT, 
-  () => console.log(`Barramento: ${process.env.PORT}`)
+  PORT_BARRAMENTO, 
+  () => console.log(`Barramento: ${PORT_BARRAMENTO}`)
 )

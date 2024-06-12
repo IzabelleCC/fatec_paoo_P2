@@ -4,7 +4,7 @@ const axios = require('axios')
 const { v4: uuidv4 } = require('uuid')
 
 // const PORT = process.env.PORT
-const { PORT } = process.env
+const { PORT_BARRAMENTO, PORT_OBSERVACOES } = process.env
 
 const app = express()
 app.use(express.json())
@@ -18,7 +18,7 @@ const funcoes = {
     const obsParaAtualizar = observacoes.find(o => o.id === observacao.id)
     obsParaAtualizar.status = observacao.status
     await axios.post(
-      'http://localhost:10000/eventos', 
+      `http://localhost:${PORT_BARRAMENTO}/eventos`, 
       {
         type: 'ObservacaoAtualizada',
         payload: {
@@ -75,7 +75,7 @@ app.post(
     const observacoesDoLembrete = observacoesPorLembreteId[idLembrete] || []
     observacoesDoLembrete.push({id: idObs, texto: texto})
     observacoesPorLembreteId[idLembrete] = observacoesDoLembrete
-    await axios.post('http://localhost:10000/eventos', {
+    await axios.post(`http://localhost:${PORT_BARRAMENTO}/eventos`, {
       type: 'ObservacaoCriada',
       payload: {
         id: idObs,
@@ -89,6 +89,6 @@ app.post(
 )
 //
 app.listen(
-  PORT, 
-  () => console.log(`Observações: ${PORT}`)
+  PORT_OBSERVACOES, 
+  () => console.log(`Observações: ${PORT_OBSERVACOES}`)
 )

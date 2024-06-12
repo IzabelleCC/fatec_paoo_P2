@@ -8,6 +8,8 @@ const app = express();
 //middleware
 app.use(express.json())
 
+const {PORT_BARRAMENTO, PORT_LEMBRETES} = process.env
+
 /*
   {
     "1": {"id": "1", "texto": "Fazer café"},
@@ -26,7 +28,7 @@ const funcoes = {
     const lembreteParaAtualizar = lembretes[lembrete.id]
     lembreteParaAtualizar.status = lembrete.status
     await axios.post(
-      'http://localhost:10000/eventos', 
+      `http://localhost:${PORT_BARRAMENTO}/eventos`, 
       {
         type: 'LembreteAtualizado',
         payload: {
@@ -36,7 +38,6 @@ const funcoes = {
         }
       }
     )
-    console.log(lembrete)
   }
 }
 
@@ -59,7 +60,7 @@ app.post('/lembretes', async (req, res) => {
   id++
   //isso é a emissão de um evento
   //ou seja, só uma requisição HTTP
-  await axios.post('http://localhost:10000/eventos', {
+  await axios.post(`http://localhost:${PORT_BARRAMENTO}/eventos`, {
     type: "LembreteCriado",
     payload: lembrete
     
@@ -69,6 +70,6 @@ app.post('/lembretes', async (req, res) => {
 })
 
 app.listen(
-  process.env.PORT,
-  () => console.log(`Lembretes: ${process.env.PORT}`)
+  PORT_LEMBRETES,
+  () => console.log(`Lembretes: ${PORT_LEMBRETES}`)
 )

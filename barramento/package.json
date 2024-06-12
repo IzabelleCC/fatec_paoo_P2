@@ -1,6 +1,7 @@
 {
   "name": "barramento",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -16,6 +17,7 @@
     "axios": "^1.7.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "p-queue": "^8.0.1"
   }
 }
